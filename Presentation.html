@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeGuard - Improving LLM Guardrails in CS Education</title>
+    <link rel="icon" type="image/png" href="Logo ĐH Công Nghệ Thông Tin - UIT.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary-navy: #1e3a8a;
+            --secondary-blue: #2563eb;
+            --accent-light: #dbeafe;
+            --text-dark: #0f172a;
+            --text-slate: #475569;
+            --bg-canvas: #ffffff;
+            --slide-bg: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            color: #0f172a;
+        }
+
+        .presentation-container {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+        }
+
+        .viewport {
+            flex-grow: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background-color: var(--bg-canvas);
+            padding: 20px;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-frame {
+            width: 1280px;
+            height: 720px;
+            background-color: var(--slide-bg);
+            color: var(--text-dark);
+            box-shadow: none;
+            border-radius: 12px;
+            position: relative;
+            display: none;
+            overflow: hidden;
+            transform-origin: center center;
+        }
+
+        .slide-frame.active {
+            display: flex;
+            animation: fadeSlideIn 0.5s ease-out forwards;
+        }
+
+        .slide-layout-split {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide-left-panel {
+            width: 65%;
+            height: 100%;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background-image: radial-gradient(#cbd5e1 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+
+        .slide-right-panel {
+            width: 35%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            border-left: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .slide-standard {
+            width: 100%;
+            height: 100%;
+            padding: 50px 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            background-image: radial-gradient(#e2e8f0 1.2px, transparent 1.2px);
+            background-size: 30px 30px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background-color: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 16px;
+            width: max-content;
+        }
+
+        .badge-amber {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+
+        .badge-emerald {
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .badge-purple {
+            background-color: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #d8b4fe;
+        }
+
+        .slide-header {
+            margin-bottom: 24px;
+        }
+
+        .slide-title {
+            font-family: 'Merriweather', serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: #0f172a;
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 15px;
+            color: #2563eb;
+            font-weight: 600;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-neutral {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .card-neutral:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-highlight {
+            border-left: 4px solid #2563eb;
+        }
+
+        .card-alert {
+            border-left: 4px solid #ef4444;
+            background-color: #fef2f2;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 4px;
+            right: 80px;
+            display: flex;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .btn-control {
+            background-color: rgba(30, 41, 59, 0.3);
+            color: rgba(248, 250, 252, 0.7);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            padding: 3px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.55rem;
+        }
+
+        .btn-control:hover {
+            background-color: rgba(30, 41, 59, 0.8);
+            color: #f8fafc;
+            border-color: #475569;
+        }
+
+        .slide-footer-overlay {
+            position: absolute;
+            bottom: 4px;
+            left: 80px;
+            right: 330px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            color: #94a3b8;
+            font-size: 9px;
+            font-weight: 500;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 6px;
+            pointer-events: none;
+            z-index: 40;
+        }
+
+        .circle-1 {
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            border: 2px solid rgba(96, 165, 250, 0.15);
+            border-radius: 50%;
+            right: -300px;
+            top: 50px;
+        }
+
+        .circle-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border: 15px solid rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            right: -200px;
+            bottom: -100px;
+        }
+
+        .circle-3 {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(59, 130, 246, 0.05);
+            border-radius: 50%;
+            top: 80px;
+            left: 40px;
+            filter: blur(24px);
+        }
+
+        .slide-standard {
+            padding: 15px 60px 10px !important;
+        }
+
+        .slide-left-panel {
+            padding: 20px 60px !important;
+        }
+
+        .slide-header {
+            margin-bottom: 8px !important;
+        }
+
+        .slide-title {
+            font-size: 28px !important;
+            line-height: 1.2 !important;
+        }
+
+        .slide-subtitle {
+            font-size: 14px !important;
+            margin-top: 2px !important;
+        }
+
+        .badge {
+            padding: 4px 10px !important;
+            margin-bottom: 6px !important;
+            font-size: 12px !important;
+        }
+
+        p,
+        li,
+        .text-sm,
+        .text-\[13px\],
+        .text-\[13\.5px\],
+        .text-\[14px\] {
+            font-size: 14px !important;
+            line-height: 1.45 !important;
+        }
+
+        .text-xs,
+        .text-\[12px\],
+        .text-\[11px\] {
+            font-size: 12.5px !important;
+            line-height: 1.4 !important;
+        }
+
+        .card-neutral {
+            padding: 12px 16px !important;
+        }
+
+        .card-neutral h3,
+        .slide-left-panel h3,
+        .slide-right-panel h3 {
+            font-size: 15.5px !important;
+            margin-bottom: 4px !important;
+        }
+
+        .gap-6 {
+            gap: 12px !important;
+        }
+
+        .gap-8 {
+            gap: 16px !important;
+        }
+
+        .mb-6 {
+            margin-bottom: 12px !important;
+        }
+
+        .mt-4 {
+            margin-top: 4px !important;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="presentation-container">
+        <div class="viewport" id="viewport">
+            <div id="scale-wrapper"
+                style="width: 1280px; height: 720px; position: relative; transform-origin: center center; flex-shrink: 0;">
+
+                <div class="slide-footer-overlay" id="global-footer">
+                    <div class="flex flex-col">
+                        <span class="tracking-wide font-semibold text-slate-600">IT2040.CH202 - Các mô hình ngôn ngữ lớn
+                            và ứng dụng</span>
+                        <span class="tracking-wide text-slate-500">Giảng Viên - TS. Lưu Thanh Sơn</span>
+                    </div>
+                    <span class="font-semibold tracking-wider text-slate-500" id="slide-counter">Trang 1 / 16</span>
+                </div>
+
+                <!-- SLIDE 1: Title -->
+                <div class="slide-frame active" id="slide-1">
+                    <div class="slide-layout-split">
+                        <div class="slide-left-panel">
+                            <div class="mb-6">
+                                <h3 class="text-[13px] font-bold text-blue-800 uppercase mb-1">Báo Cáo Seminar Giữa Kỳ -
+                                    Các mô hình ngôn ngữ lớn</h3>
+                            </div>
+
+                            <div class="badge">
+                                <i class="fa-solid fa-book-journal-whills mr-2"></i>EACL 2026
+                            </div>
+                            <h1 class="main-title text-4xl font-extrabold font-serif mb-3 text-slate-900">CodeGuard</h1>
+                            <h2 class="sub-title text-xl text-blue-700 font-semibold mb-6">Improving LLM Guardrails in
+                                CS Education</h2>
+
+                            <div
+                                class="grid grid-cols-2 gap-6 mt-4 bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-500 tracking-wide uppercase mb-2"><i
+                                            class="fa-solid fa-feather-pointed mr-1"></i> Nhóm tác giả bài báo</p>
+                                    <p class="text-[12px] text-slate-600 font-medium leading-relaxed">
+                                        Nishat Raihan, Noah Erdachew, Jayoti Devi, Joanna C. S. Santos, Marcos
+                                        Zampieri<br />(George Mason University, University of Oklahoma, University of
+                                        Notre Dame)
+                                    </p>
+                                </div>
+                                <div class="border-l border-slate-200 pl-5">
+                                    <p class="text-[11px] font-bold text-slate-500 tracking-wide uppercase mb-2"><i
+                                            class="fa-solid fa-users mr-1"></i> Thông tin báo cáo</p>
+                                    <div class="text-[12px] text-slate-600 font-medium leading-relaxed space-y-2">
+                                        <p><strong>Giảng viên:</strong> TS Lưu Thanh Sơn</p>
+                                        <p><strong>Báo cáo viên:</strong><br />&bull; Nguyễn Văn Hưng<br />&bull; Bùi
+                                            Đức Vũ<br />&bull; Nguyễn Văn Dư</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slide-right-panel p-6 flex flex-col justify-center items-center">
+                            <img src="Logo ĐH Công Nghệ Thông Tin - UIT.png" alt="UIT Logo"
+                                class="w-3/4 max-w-[280px] h-auto object-contain z-10 mb-8">
+                            <div
+                                class="text-slate-500 font-bold uppercase tracking-wider text-[12px] mb-2 z-10 text-center">
+                                Đại học Quốc gia Thành phố Hồ Chí Minh</div>
+                            <div class="text-blue-800 font-bold text-[18px] text-center z-10 uppercase mb-12">Trường Đại
+                                học Công nghệ Thông tin</div>
+                            <div class="text-slate-600 font-medium text-[14px] text-center z-10">Hồ Chí Minh, 07/2026
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Authors -->
+                <div class="slide-frame" id="slide-authors">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-users mr-2"></i>Nhóm tác giả</div>
+                            <h1 class="slide-title">Nhóm tác giả bài báo</h1>
+                            <p class="slide-subtitle">Các nhà nghiên cứu từ các trường Đại học Hoa Kỳ</p>
+                        </div>
+                        <div class="flex flex-col gap-4 mt-2">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="card-neutral border-l-4 border-blue-500 shadow-sm py-4">
+                                    <h3 class="font-bold text-lg text-blue-800 mb-3"><i
+                                            class="fa-solid fa-building-columns mr-2"></i>Các tổ chức tham gia</h3>
+                                    <ul class="list-disc pl-5 text-slate-600 text-[14px] leading-relaxed space-y-2">
+                                        <li><strong>George Mason University:</strong> Đóng vai trò chủ chốt trong nghiên
+                                            cứu bảo mật và xử lý ngôn ngữ tự nhiên.</li>
+                                        <li><strong>University of Oklahoma:</strong> Chuyên môn về kỹ thuật phần mềm và
+                                            đánh giá an toàn.</li>
+                                        <li><strong>University of Notre Dame:</strong> Đóng góp vào phân tích và xây
+                                            dựng hệ thống Guardrails.</li>
+                                    </ul>
+                                </div>
+                                <div class="card-neutral border-l-4 border-purple-500 shadow-sm py-4">
+                                    <h3 class="font-bold text-lg text-purple-800 mb-3"><i
+                                            class="fa-solid fa-user-tie mr-2"></i>Các tác giả nổi bật</h3>
+                                    <ul class="list-disc pl-5 text-slate-600 text-[14px] leading-relaxed space-y-2">
+                                        <li><strong>Nishat Raihan:</strong> Tác giả chính (George Mason University).
+                                        </li>
+                                        <li><strong>Noah Erdachew:</strong> Đồng tác giả (George Mason University).</li>
+                                        <li><strong>Jayoti Devi:</strong> Đồng tác giả (George Mason University).</li>
+                                        <li><strong>Joanna C. S. Santos:</strong> Chuyên gia từ University of Notre
+                                            Dame.</li>
+                                        <li><strong>Marcos Zampieri:</strong> Chuyên gia từ University of Oklahoma.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="card-neutral border-l-4 border-emerald-500 shadow-sm py-4 mt-2">
+                                <h3 class="font-bold text-lg text-emerald-800 mb-2"><i
+                                        class="fa-solid fa-star mr-2"></i>Giá trị cốt lõi của nhóm</h3>
+                                <p class="text-slate-600 text-[14px] leading-relaxed">
+                                    Sự kết hợp giữa chuyên môn sâu về <strong>Bảo mật phần mềm (Software
+                                        Security)</strong> và <strong>Xử lý ngôn ngữ tự nhiên (NLP)</strong> giúp nhóm
+                                    nghiên cứu đánh giá toàn diện các rủi ro của LLMs trong giáo dục Khoa học máy tính
+                                    và đề xuất giải pháp phòng ngừa hiệu quả.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Abstract -->
+                <div class="slide-frame" id="slide-2">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-compass mr-2"></i>Abstract</div>
+                            <h1 class="slide-title">Tóm tắt (Abstract)</h1>
+                            <p class="slide-subtitle">Tổng quan về nghiên cứu CodeGuard</p>
+                        </div>
+                        <div class="flex flex-col gap-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="card-neutral card-alert">
+                                    <h3 class="font-bold text-lg text-red-700 mb-2"><i
+                                            class="fa-solid fa-circle-exclamation mr-2"></i>Vấn đề hiện tại</h3>
+                                    <p class="text-slate-600 text-sm leading-relaxed">
+                                        LLMs (Mô hình ngôn ngữ lớn) ngày càng được sử dụng rộng rãi trong giáo dục Khoa
+                                        học máy tính (CS). Tuy nhiên, LLMs dễ bị tấn công bởi các prompt chứa mục đích
+                                        xấu, đe dọa trực tiếp tới tính liêm chính học thuật (academic integrity) và chất
+                                        lượng học tập. Các công cụ Guardrail hiện tại không giải quyết tốt được vấn đề
+                                        này.
+                                    </p>
+                                </div>
+                                <div class="card-neutral card-highlight">
+                                    <h3 class="font-bold text-lg text-blue-800 mb-2"><i
+                                            class="fa-solid fa-lightbulb mr-2"></i>Đề xuất: CodeGuard</h3>
+                                    <p class="text-slate-600 text-sm leading-relaxed">
+                                        Nhóm tác giả đề xuất <strong>CodeGuard</strong> - một framework Guardrail toàn
+                                        diện gồm: <br />(1)Hệ thống phân loại để phân loại các lời nhắc prompt,
+                                        <br />(2) Dataset 8.000 prompts,
+                                        <br />(3) Mô hình <strong>PromptShield</strong> (encoder-model) nhẹ và nhanh.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="card-neutral border-l-4 border-emerald-500">
+                                <h3 class="font-bold text-lg text-emerald-800 mb-2"><i
+                                        class="fa-solid fa-square-poll-horizontal mr-2"></i>Kết quả nổi bật</h3>
+                                <ul class="list-disc pl-5 text-slate-600 text-sm leading-relaxed space-y-1">
+                                    <li>Mô hình PromptShield đạt điểm <strong>F1 lên tới 0.93</strong>, vượt trội hơn
+                                        các mô hình như GPT-4o, Claude 3.7.</li>
+                                    <li>CodeGuard giảm thiểu việc sinh code độc hại/vi phạm nội quy từ
+                                        <strong>30-65%</strong>.
+                                    </li>
+                                    <li>Đảm bảo hiệu suất sinh code hợp lệ không bị giảm đi (không ảnh hưởng tới bài
+                                        toán lập trình thông thường).</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 3: Introduction -->
+                <div class="slide-frame" id="slide-3">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-book-open mr-2"></i>1. Giới thiệu</div>
+                            <h1 class="slide-title">1. Bối cảnh & Vấn đề</h1>
+                            <p class="slide-subtitle">Sự bùng nổ của AI Assistant trong lập trình</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-2">
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-blue-800 mb-2"><i
+                                        class="fa-solid fa-arrow-trend-up mr-2"></i>Lợi ích của LLMs trong CS</h3>
+                                <ul class="list-disc pl-5 text-slate-600 text-sm leading-relaxed space-y-2">
+                                    <li>Công cụ sinh code (code generation) hỗ trợ đắc lực trong giảng dạy, chấm bài tự
+                                        động.</li>
+                                    <li>Giúp người học có ngay đáp án, gợi ý và giải thích mã nguồn (AI-assisted coding
+                                        tools).</li>
+                                </ul>
+                            </div>
+                            <div class="card-neutral card-alert">
+                                <h3 class="font-bold text-red-700 mb-2"><i
+                                        class="fa-solid fa-triangle-exclamation mr-2"></i>Rủi ro tiềm ẩn (Risks)</h3>
+                                <ul class="list-disc pl-5 text-slate-600 text-sm leading-relaxed space-y-2">
+                                    <li>Gian lận, mất liêm chính học thuật (học sinh dùng AI giải thẳng bài thi).</li>
+                                    <li>LLM có thể sinh ra <strong>mã độc, virus, ransomware</strong> nếu bị prompt
+                                        injection.</li>
+                                    <li>Nguy cơ xoá dữ liệu, leo thang đặc quyền trên server nhà trường.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-4">
+                            <div class="card-neutral border-l-4 border-indigo-500">
+                                <h3 class="font-bold text-indigo-800 mb-2"><i
+                                        class="fa-solid fa-shield-virus mr-2"></i>Guardrails là gì?</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed mb-2">
+                                    <strong>Guardrails</strong> (rào chắn an toàn) là các lớp bảo mật và kiểm duyệt giúp
+                                    AI hoạt động an toàn, từ chối trả lời các prompt độc hại hoặc vi phạm chính sách.
+                                </p>
+                                <p class="text-slate-600 text-xs mt-2 border-t border-slate-100 pt-2">
+                                    <strong>Các hệ thống phổ biến:</strong> LLaMA Guard (Inan et al., 2023), NeMo Guardrails (Rebedea et al., 2023), OpenAI Moderation API.
+                                </p>
+                            </div>
+                            <div class="card-neutral border-l-4 border-purple-500">
+                                <h3 class="font-bold text-purple-800 mb-2"><i
+                                        class="fa-solid fa-shield-halved mr-2"></i>Tại
+                                    sao cần Guardrails riêng cho Giáo dục?</h3>
+                                <p class="text-slate-600 text-sm leading-relaxed">
+                                    Các Guardrails hiện tại thường chỉ lọc bạo lực, thù ghét... mà <strong>không hiểu
+                                        bối cảnh sư phạm</strong> (ví
+                                    dụ: việc "xin thẳng code giải bài tập" không mang tính bạo lực nhưng lại vi phạm
+                                    liêm chính học
+                                    thuật). Do đó cần 1 Guardrail chuyên dụng.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 4: Taxonomy -->
+                <div class="slide-frame" id="slide-4">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-sitemap mr-2"></i>2. Phân loại (Taxonomy)</div>
+                            <h1 class="slide-title">2. CodeGuard Taxonomy</h1>
+                            <p class="slide-subtitle">Phân loại Prompts trong môi trường học thuật</p>
+                        </div>
+
+                        <p class="text-slate-600 text-sm mb-4">Các tác giả đã phân tích các đề cương môn học (syllabi)
+                            của 18 khoá học từ 12 trường đại học để xây dựng bộ phân loại gồm 3 nhóm chính:</p>
+
+                        <div
+                            class="image-container bg-white p-2 border border-slate-200 rounded-lg shadow-sm flex flex-col items-center">
+                            <img src="Figure 1.PNG" alt="Phân loại các prompt lập trình"
+                                class="max-h-[340px] object-contain">
+                            <div class="mt-3 text-center w-full px-4 border-t border-slate-100 pt-3">
+                                <p class="text-[13px] text-slate-800 font-bold mb-2">Hình 1: Bộ phân loại gồm 3 nhóm
+                                    chính đối với các truy vấn của sinh viên</p>
+                                <div class="flex justify-center gap-6 text-[12px] text-slate-600">
+                                    <span class="flex items-center"><i
+                                            class="fa-solid fa-circle-check text-emerald-500 mr-1.5 text-sm"></i><strong>Relevant-Safe
+                                            (RS):</strong> Truy vấn liên quan và hợp lệ</span>
+                                    <span class="flex items-center"><i
+                                            class="fa-solid fa-triangle-exclamation text-red-500 mr-1.5 text-sm"></i><strong>Relevant-Unsafe
+                                            (RU):</strong> Liên quan nhưng vi phạm nội quy</span>
+                                    <span class="flex items-center"><i
+                                            class="fa-solid fa-ban text-slate-400 mr-1.5 text-sm"></i><strong>Irrelevant
+                                            (IR):</strong> Không liên quan môn học</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 5: 20 Unsafe Types -->
+                <div class="slide-frame" id="slide-5">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-bug mr-2"></i>2. Phân loại (Taxonomy)</div>
+                            <h1 class="slide-title">20 Dạng Vi Phạm (Unsafe Prompts)</h1>
+                            <p class="slide-subtitle">Những mối nguy hại chính được phân loại</p>
+                        </div>
+
+                        <div class="card-neutral">
+                            <p class="text-sm text-slate-600 mb-3">Nhóm tác giả chia nhóm Relevant-Unsafe (RU) thành 20
+                                hạng mục vi phạm chi tiết. Một số nhóm nổi bật:</p>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <h4 class="font-bold text-red-700 text-sm mb-1"><i
+                                            class="fa-solid fa-graduation-cap mr-2"></i>Gian lận học thuật</h4>
+                                    <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1 mb-3">
+                                        <li><strong>Graded-Solution Request:</strong> Xin code giải hoàn chỉnh bài tập
+                                            lấy điểm.</li>
+                                        <li><strong>Autograder Submission Code:</strong> Xin code chỉ để lách qua hệ
+                                            thống chấm tự động.</li>
+                                        <li><strong>Exam Cheat Sheet Generation:</strong> Xin script tự động điền đáp án
+                                            bài thi.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-red-700 text-sm mb-1"><i
+                                            class="fa-solid fa-skull-crossbones mr-2"></i>Phá hoại & An ninh</h4>
+                                    <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1 mb-3">
+                                        <li><strong>Data Deletion / Wipe:</strong> Xin script xoá sạch file/database.
+                                        </li>
+                                        <li><strong>Malware / Keylogger:</strong> Tạo mã độc đánh cắp phím bấm,
+                                            Ransomware.</li>
+                                        <li><strong>Privilege Escalation:</strong> Leo thang đặc quyền thoát khỏi
+                                            sandbox hệ thống.</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-red-700 text-sm mb-1"><i
+                                            class="fa-solid fa-user-secret mr-2"></i>Vi phạm bản quyền & Quyền riêng tư
+                                    </h4>
+                                    <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1">
+                                        <li><strong>License Circumvention:</strong> Lách DRM, active phần mềm lậu.</li>
+                                        <li><strong>Privacy Violation:</strong> Scrape và lộ thông tin cá nhân (email,
+                                            SĐT).</li>
+                                    </ul>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-red-700 text-sm mb-1"><i
+                                            class="fa-solid fa-money-bill-wave mr-2"></i>Lạm dụng tài nguyên</h4>
+                                    <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1">
+                                        <li><strong>API Abuse:</strong> Lách giới hạn gọi API (Rate limit bypass).</li>
+                                        <li><strong>Unauthorized Crypto-Mining:</strong> Chạy code đào coin trái phép
+                                            trên máy tính lab.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 6: Dataset -->
+                <div class="slide-frame" id="slide-6">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-database mr-2"></i>3. Dữ liệu (Dataset)</div>
+                            <h1 class="slide-title">3. Bộ dữ liệu CodeGuard</h1>
+                            <p class="slide-subtitle">Quy trình xây dựng 8,000 Prompts</p>
+                        </div>
+
+                        <div class="flex flex-col gap-4">
+                            <div class="grid grid-cols-[55%_45%] gap-6 items-center">
+                                <div
+                                    class="image-container bg-white p-3 border border-slate-200 rounded-lg shadow-sm flex flex-col items-center">
+                                    <img src="Figure 2.PNG" alt="Quy trình xây dựng tập dữ liệu CodeGuard"
+                                        class="max-h-[410px] object-contain">
+                                    <p class="text-sm text-slate-800 font-bold mt-3 text-center">Hình 2: Quy trình xây
+                                        dựng tập dữ liệu CodeGuard</p>
+                                </div>
+
+                                <div class="flex flex-col gap-3">
+                                    <h3 class="font-bold text-slate-800 text-[15px] border-b border-slate-200 pb-1.5"><i
+                                            class="fa-solid fa-list-check text-blue-600 mr-2"></i>Các module trong Hình
+                                        2</h3>
+
+                                    <div class="bg-slate-50 p-2.5 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                                        <strong class="text-blue-800 flex items-center mb-0.5 text-[13px]"><i
+                                                class="fa-solid fa-microchip mr-2"></i>1. LLM Models</strong>
+                                        <p class="text-slate-600 text-[12.5px] leading-relaxed">Sử dụng các LLMs để tự
+                                            động sinh ra các đoạn prompt lập trình (đặc biệt là các prompt độc hại dựa
+                                            trên taxonomy).</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-2.5 rounded-lg border-l-4 border-purple-500 shadow-sm">
+                                        <strong class="text-purple-800 flex items-center mb-0.5 text-[13px]"><i
+                                                class="fa-solid fa-shuffle mr-2"></i>2. Random Selected Prompts</strong>
+                                        <p class="text-slate-600 text-[12.5px] leading-relaxed">Lấy mẫu ngẫu nhiên từ
+                                            lượng lớn dữ liệu vừa sinh ra và từ kho nguồn mở để đảm bảo tính phân phối
+                                            đa dạng.</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-2.5 rounded-lg border-l-4 border-emerald-500 shadow-sm">
+                                        <strong class="text-emerald-800 flex items-center mb-0.5 text-[13px]"><i
+                                                class="fa-solid fa-layer-group mr-2"></i>3. Group Dataset</strong>
+                                        <p class="text-slate-600 text-[12.5px] leading-relaxed">Phân nhóm các prompt đã
+                                            chọn lọc vào 3 danh mục rõ ràng: Relevant-Safe (RS), Relevant-Unsafe (RU),
+                                            và Irrelevant (IR).</p>
+                                    </div>
+
+                                    <div class="bg-slate-50 p-2.5 rounded-lg border-l-4 border-orange-500 shadow-sm">
+                                        <strong class="text-orange-800 flex items-center mb-0.5 text-[13px]"><i
+                                                class="fa-solid fa-database mr-2"></i>4. Prompts -> Train / Test
+                                            Split</strong>
+                                        <p class="text-slate-600 text-[12.5px] leading-relaxed">Tập hợp thành bộ
+                                            CodeGuard 8,000 prompts hoàn chỉnh, sau đó chia làm 2 tập: Train (để huấn
+                                            luyện) và Test (để đánh giá).</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500 shadow-sm">
+                                <strong class="text-red-800 flex items-center mb-1 text-[14px]"><i
+                                        class="fa-solid fa-star text-yellow-500 mr-2"></i>Điểm mới: Sinh dữ liệu
+                                    RU</strong>
+                                <p class="text-slate-600 text-[13px] leading-relaxed">Do chưa có tập dữ liệu công khai
+                                    về hành vi vi phạm CS, nhóm nghiên cứu tiên phong dùng LLM không kiểm duyệt tạo mới
+                                    2.000 prompts RU để giải quyết khoảng trống dữ liệu này.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 7: Annotation -->
+                <div class="slide-frame" id="slide-7">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-user-check mr-2"></i>3. Dữ liệu (Dataset)</div>
+                            <h1 class="slide-title">Đánh giá độ tin cậy (Annotation)</h1>
+                            <p class="slide-subtitle">Quá trình gán nhãn thủ công với độ chính xác cao</p>
+                        </div>
+
+                        <p class="text-[14px] text-slate-600 mb-4 text-center">Nhóm nghiên cứu chọn ngẫu nhiên
+                            <strong>1.000 prompts</strong> (Test Split) để con người tự gán nhãn lại, đảm bảo độ chính
+                            xác của tập dữ liệu tự động sinh.</p>
+
+                        <!-- Sơ đồ Annotation Process -->
+                        <div
+                            class="flex items-center justify-center gap-3 mb-5 bg-white/50 p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <div
+                                class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center w-36 shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-file-circle-question text-blue-600 text-3xl mb-3 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">1.000 Prompts</div>
+                                <div class="text-[11px] text-slate-600">Lấy mẫu ngẫu nhiên</div>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-right text-slate-300 text-xl"></i>
+
+                            <div
+                                class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-40 shadow-sm relative hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-users text-purple-600 text-3xl mb-3 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">Gán nhãn độc lập</div>
+                                <div class="text-[11px] text-slate-600">1 Ph.D & 1 Undergrad</div>
+                                <div
+                                    class="absolute -top-2 -right-2 bg-white border border-purple-200 rounded-full text-[10px] px-1.5 py-0.5 font-bold text-purple-700 shadow-sm">
+                                    Kappa: 0.96</div>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-right text-slate-300 text-xl"></i>
+
+                            <div
+                                class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center w-36 shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-gavel text-orange-600 text-3xl mb-3 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">Trọng tài</div>
+                                <div class="text-[11px] text-slate-600">NCS Năm 5 (Bất đồng)</div>
+                            </div>
+
+                            <i class="fa-solid fa-arrow-right text-slate-300 text-xl"></i>
+
+                            <div
+                                class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center w-36 shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-medal text-emerald-600 text-3xl mb-3 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">Gold-standard</div>
+                                <div class="text-[11px] text-slate-600">Tập dữ liệu chuẩn</div>
+                            </div>
+                        </div>
+
+                        <!-- Kết quả và nhận xét -->
+                        <div class="grid grid-cols-2 gap-4">
+                            <div
+                                class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-blue-500">
+                                <h3 class="font-bold text-slate-800 text-[14px] mb-1.5"><i
+                                        class="fa-solid fa-handshake-angle text-blue-600 mr-2"></i>Độ đồng thuận cực cao
+                                </h3>
+                                <p class="text-[12.5px] text-slate-600 leading-relaxed">Góc nhìn sư phạm đa chiều đem
+                                    lại <strong>Raw agreement đạt 97.6%</strong>, chứng tỏ độ tin cậy tuyệt đối.</p>
+                            </div>
+                            <div
+                                class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+                                <h3 class="font-bold text-slate-800 text-[14px] mb-1.5"><i
+                                        class="fa-solid fa-bullseye text-emerald-600 mr-2"></i>Chất lượng Pipeline</h3>
+                                <p class="text-[12.5px] text-slate-600 leading-relaxed">Chỉ 2.6% nhãn tự động bị sai.
+                                    <strong>Accuracy đạt 97.4%</strong>. Chứng minh <strong>pipeline</strong> tự động
+                                    cực kỳ chính xác.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 8: Benchmarking Existing -->
+                <div class="slide-frame" id="slide-8">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-chart-simple mr-2"></i>4. Đánh giá (Evaluation)
+                            </div>
+                            <h1 class="slide-title">Đánh giá các Guardrails hiện tại</h1>
+                            <p class="slide-subtitle">Sự thất bại của các LLM khổng lồ trong bối cảnh CS</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div class="flex flex-col gap-4">
+                                <p class="text-sm text-slate-600">
+                                    Thử nghiệm phân loại 3 lớp (IR, RS, RU) trên tập Test set với các mô hình và
+                                    framework bảo vệ phổ biến nhất hiện nay.
+                                </p>
+                                <div
+                                    class="image-container bg-white p-2 border border-slate-200 rounded-lg shadow-sm flex flex-col items-center">
+                                    <img src="Table 1.PNG" alt="Kết quả F1-Score" class="max-h-[300px] object-contain">
+                                    <p class="text-xs text-slate-600 font-semibold mt-2 text-center">Bảng 1: Kết quả
+                                        đánh giá F1-score của các mô hình.</p>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-3">
+                                <h3 class="font-bold text-slate-800 text-[15px] border-b border-slate-200 pb-1.5"><i
+                                        class="fa-solid fa-magnifying-glass-chart text-blue-600 mr-2"></i>Phân tích chi
+                                    tiết kết quả (Bảng 1)</h3>
+
+                                <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500 shadow-sm">
+                                    <strong class="text-red-800 flex items-center mb-0.5 text-[13px]"><i
+                                            class="fa-solid fa-xmark mr-2"></i>Sự thất bại của Guardrail truyền
+                                        thống</strong>
+                                    <p class="text-slate-600 text-[12.5px] leading-relaxed">Các bộ lọc nội dung (LLaMA Guard (Inan et al., 2023), NeMo Guardrails (Rebedea et al., 2023)) cho F1-score rất thấp (chỉ ~0.2 - 0.4). Chúng hoàn toàn
+                                        "mù" trước các vi phạm về liêm chính học thuật vì chỉ được huấn luyện để bắt bạo
+                                        lực, ngôn từ kích động.</p>
+                                </div>
+
+                                <div class="bg-orange-50 p-3 rounded-lg border-l-4 border-orange-500 shadow-sm">
+                                    <strong class="text-orange-800 flex items-center mb-0.5 text-[13px]"><i
+                                            class="fa-solid fa-robot mr-2"></i>Các LLMs khổng lồ cũng "chật
+                                        vật"</strong>
+                                    <p class="text-slate-600 text-[12.5px] leading-relaxed">Dù có khả năng suy luận mạnh
+                                        mẽ, các mô hình SOTA (như GPT-4o (Hurst et al., 2024), Claude 3.7 Sonnet (Anthropic, 2025)) cũng không thể vượt quá
+                                        ngưỡng <strong>F1 = 0.65</strong> ở chế độ Zero-shot, chứng tỏ sự thiếu hụt kiến
+                                        thức đặc thù về chính sách môn học.</p>
+                                </div>
+
+                                <div class="bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-500 shadow-sm">
+                                    <strong class="text-yellow-800 flex items-center mb-0.5 text-[13px]"><i
+                                            class="fa-solid fa-code-compare mr-2"></i>Rào cản về "Bối cảnh" (Context
+                                        Confusion)</strong>
+                                    <p class="text-slate-600 text-[12.5px] leading-relaxed">LLMs dễ bị nhầm lẫn: một câu
+                                        lệnh (như "viết script crawl data") là hoàn toàn hợp lệ ở môi trường làm việc
+                                        thực tế, nhưng lại bị cấm ngặt nghèo trong một bài tập cơ sở dữ liệu. Do đó, cần
+                                        có mô hình nhận diện được bối cảnh CS.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 9: PromptShield Model -->
+                <div class="slide-frame" id="slide-9">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-shield mr-2"></i>5. Đề xuất mô hình</div>
+                            <h1 class="slide-title">Mô hình PromptShield</h1>
+                            <p class="slide-subtitle">A Novel Guardrail Model cho Giáo dục CS</p>
+                        </div>
+
+                        <!-- Định nghĩa PromptShield -->
+                        <div
+                            class="mb-5 italic text-slate-700 text-[14px] border-l-4 border-blue-500 bg-blue-50/60 p-4 rounded-r-lg shadow-sm">
+                            <i class="fa-solid fa-quote-left text-blue-400 text-xl float-left mr-3 mb-1"></i>
+                            <p class="leading-relaxed"><strong>PromptShield</strong> là một mô hình Guardrail chuyên
+                                biệt, gọn nhẹ nhưng mạnh mẽ, được tinh chỉnh (fine-tuned) đặc biệt để bảo vệ tính liêm
+                                chính học thuật trong giáo dục Khoa học máy tính. Khác với các hệ thống thương mại, nó
+                                có khả năng nhận diện chính xác ranh giới mong manh giữa một câu lệnh hỗ trợ lập trình
+                                thông thường và hành vi gian lận bài tập.</p>
+                        </div>
+
+                        <!-- Architecture and Training Flowchart -->
+                        <h3 class="font-bold text-slate-800 text-[15px] mb-3"><i
+                                class="fa-solid fa-microchip text-emerald-600 mr-2"></i>Sơ đồ Kiến trúc & Huấn luyện
+                        </h3>
+                        <div
+                            class="flex items-center justify-center gap-4 mb-5 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                            <div
+                                class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center w-40 shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-database text-blue-600 text-3xl mb-2 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">Dữ liệu huấn luyện</div>
+                                <div class="text-[11px] text-slate-600">6.000 prompts<br>(CodeGuard Train Split)</div>
+                            </div>
+
+                            <div class="flex flex-col items-center w-16">
+                                <span class="text-[10px] text-slate-500 font-bold mb-1">Fine-tune</span>
+                                <i class="fa-solid fa-arrow-right-long text-slate-300 text-2xl"></i>
+                            </div>
+
+                            <div
+                                class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-48 shadow-sm relative hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-brain text-purple-600 text-3xl mb-2 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">RoBERTa-base (Liu et al., 2019)</div>
+                                <div class="text-[11px] text-slate-600">Huấn luyện: 37 phút (1x A6000)</div>
+                                <div
+                                    class="absolute -top-3 -right-3 bg-white border border-purple-200 rounded-full text-[10px] px-2 py-0.5 font-bold text-purple-700 shadow-sm">
+                                    Gọn nhẹ</div>
+                            </div>
+
+                            <div class="flex flex-col items-center w-16">
+                                <span class="text-[10px] text-slate-500 font-bold mb-1">Phân loại</span>
+                                <i class="fa-solid fa-arrow-right-long text-slate-300 text-2xl"></i>
+                            </div>
+
+                            <div
+                                class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center w-40 shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-shield-halved text-emerald-600 text-3xl mb-2 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">PromptShield</div>
+                                <div class="text-[11px] text-slate-600">Pre-filter Đa lớp:<br><strong>RS / RU /
+                                        IR</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Results -->
+                        <div
+                            class="bg-emerald-50 border border-emerald-300 p-4 rounded-xl flex items-center justify-between gap-4 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-4 -top-4 opacity-10">
+                                <i class="fa-solid fa-trophy text-[100px] text-emerald-600"></i>
+                            </div>
+                            <div class="text-left flex-1 border-r border-emerald-200/60 pr-4 z-10">
+                                <h3 class="font-bold text-emerald-900 text-[16px] mb-1"><i
+                                        class="fa-solid fa-bolt text-yellow-500 mr-2"></i>Kết quả đột phá</h3>
+                                <p class="text-[13px] text-emerald-800 leading-relaxed">Độ trễ thấp, vượt xa các mô hình
+                                    khổng lồ (GPT-4o (Hurst et al., 2024), Claude 3.7 Sonnet (Anthropic, 2025)) từ <strong>30-65%</strong> hiệu suất. Cực kỳ lý tưởng để
+                                    triển khai làm lớp màng lọc chặn trước (Pre-filter) ở môi trường thực tế.</p>
+                            </div>
+                            <div class="w-1/4 text-center z-10">
+                                <span class="block text-[34px] font-black text-emerald-600 leading-none">0.93</span>
+                                <span
+                                    class="text-[12px] font-bold text-emerald-800 uppercase tracking-widest mt-1 block">F1-Score</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 10: Use Cases -->
+                <div class="slide-frame" id="slide-10">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-gears mr-2"></i>6. Ứng dụng</div>
+                            <h1 class="slide-title">Triển khai thực tế với LLMs</h1>
+                            <p class="slide-subtitle">Làm sao để bảo vệ mô hình?</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-blue-800 text-md mb-2"><i
+                                        class="fa-solid fa-filter mr-2"></i>Chiến lược 1: Tiền lọc (Pre-filter)</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Sử dụng PromptShield đứng ở cổng vào. Bất cứ người dùng nào gửi prompt, PromptShield
+                                    sẽ chấm điểm. Nếu là RU hoặc IR, chặn ngay lập tức. Nếu RS, đẩy tiếp cho LLM xử lý.
+                                </p>
+                            </div>
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-blue-800 text-md mb-2"><i
+                                        class="fa-solid fa-brain mr-2"></i>Chiến lược 2: Fine-tuning LLM trực tiếp</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Huấn luyện chính các mô hình sinh code (Code LLMs) cách <strong>từ chối an
+                                        toàn</strong> khi gặp các câu hỏi RU hoặc IR, mà không cần màng lọc bên ngoài.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="card-neutral card-highlight mt-4">
+                            <h3 class="font-bold text-slate-800 text-md mb-2">Ví dụ phản hồi từ chối (Standardized
+                                Refusals):</h3>
+                            <div
+                                class="bg-slate-100 p-3 rounded text-sm text-slate-700 italic border-l-4 border-slate-300">
+                                <strong>Đối với prompt Unsafe (RU):</strong> "Apologies. But I can not assist you with
+                                this particular inquiry. This violates one or more standards and guidelines for the
+                                course."<br /><br />
+                                <strong>Đối với prompt Irrelevant (IR):</strong> "Apologies. But I can not assist you
+                                with this particular inquiry. This query is not relevant to our particular context."
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 11: Retaining Performance -->
+                <div class="slide-frame" id="slide-11">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-check-double mr-2"></i>6. Ứng dụng</div>
+                            <h1 class="slide-title">Bảo toàn khả năng lập trình</h1>
+                            <p class="slide-subtitle">Safety Fine-tuning có làm mô hình ngốc đi?</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-5 mt-2">
+                            <!-- Cột Bảng 2 -->
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[230px]">
+                                    <img src="Table 2.PNG" alt="Các bộ dữ liệu benchmark"
+                                        class="max-h-[170px] object-contain">
+                                    <p class="text-[12.5px] text-slate-800 font-bold mt-2 text-center">Bảng 2: Các tập
+                                        dữ liệu Benchmark</p>
+                                </div>
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-3.5 rounded-lg shadow-sm h-full">
+                                    <h3 class="font-bold text-blue-800 text-[14px] mb-1.5"><i
+                                            class="fa-solid fa-table text-blue-600 mr-2"></i>Chi tiết các bộ dữ liệu
+                                        trong Bảng 2</h3>
+                                    <p class="text-[13px] text-slate-600 leading-relaxed">Bảng 2 liệt kê 4 bộ benchmark
+                                        lập trình tiêu chuẩn được dùng để đo lường năng lực sinh mã (Pass@1) của mô
+                                        hình:</p>
+                                    <ul class="list-disc pl-5 text-[12.5px] text-slate-600 mt-1.5 space-y-1.5">
+                                        <li><strong>HumanEval (Chen et al., 2021) & MBPP (Austin et al., 2021):</strong> Các bài toán lập trình Python cơ bản.
+                                        </li>
+                                        <li><strong>CodeWorkout (Edwards and Murali, 2017):</strong> Hàng ngàn bài tập tự động chấm điểm cho lớp CS1.</li>
+                                        <li><strong>IntroClass (Le Goues et al., 2015):</strong> Các chương trình sinh viên (ngôn ngữ C) phục vụ chấm điểm tự động.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <!-- Cột Hình 3 -->
+                            <div class="flex flex-col gap-3">
+                                <div
+                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[230px]">
+                                    <img src="Figure 3.PNG" alt="So sánh hiệu suất Pass@1 và điểm F1"
+                                        class="max-h-[170px] object-contain">
+                                    <p class="text-[12.5px] text-slate-800 font-bold mt-2 text-center">Hình 3: Kết quả
+                                        sau khi fine-tuning</p>
+                                </div>
+                                <div
+                                    class="bg-purple-50 border-l-4 border-purple-500 p-3.5 rounded-lg shadow-sm h-full">
+                                    <h3 class="font-bold text-purple-800 text-[14px] mb-1.5"><i
+                                            class="fa-solid fa-chart-line mr-2"></i>Sự bảo toàn</h3>
+                                    <p class="text-[13px] text-slate-600 leading-relaxed">Hình 3 chứng minh kết quả
+                                        tuyệt vời: Sau khi Safety Fine-tuning trên tập CodeGuard, khả năng phân loại an
+                                        toàn (trục Y - F1 Score) <strong>tăng vọt lên ngưỡng xuất sắc 0.9+</strong>,
+                                        trong khi năng lực giải thuật nguyên bản (trục X - Pass@1) <strong>gần như được
+                                            giữ nguyên hoàn toàn</strong>. Mô hình trở nên an toàn hơn mà không hề "ngốc
+                                        đi".</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 12: Deployment Study -->
+                <div class="slide-frame" id="slide-12">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-chalkboard-user mr-2"></i>7. Tương lai</div>
+                            <h1 class="slide-title">Hướng tới triển khai thực tế lớp học</h1>
+                            <p class="slide-subtitle">Future Work: Nghiên cứu phản ứng của Giáo viên</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-blue-800 text-md mb-2">Kế hoạch Khảo sát</h3>
+                                <p class="text-sm text-slate-600 leading-relaxed">
+                                    Dự án sắp tới sẽ triển khai phiếu khảo sát nặc danh hướng tới các giảng viên CS ở
+                                    nhiều trường Đại học (những người dạy các môn Nhập môn lập trình, Công nghệ phần
+                                    mềm).
+                                </p>
+                            </div>
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-blue-800 text-md mb-2">Mục tiêu Thu thập</h3>
+                                <ul class="list-disc pl-5 text-slate-600 text-sm space-y-2">
+                                    <li>Chính sách hiện tại của trường học về AI.</li>
+                                    <li>Rào cản khi sử dụng trợ lý AI trong dạy học.</li>
+                                    <li>Phản hồi thực tế về công cụ <strong>CodeGuard</strong>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-neutral border-l-4 border-indigo-500 mt-4">
+                            <p class="text-sm text-slate-600">
+                                <strong>Bước tiếp theo:</strong> Sau khi có kết quả khảo sát và phản hồi, nhóm sẽ tiến
+                                hành thử nghiệm thực tế (A/B testing) trực tiếp trên các hệ thống học tập để đo lường độ
+                                hiệu quả.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 13: Conclusion -->
+                <div class="slide-frame" id="slide-13">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge"><i class="fa-solid fa-flag-checkered mr-2"></i>8. Tổng kết</div>
+                            <h1 class="slide-title">Kết luận & Bài học rút ra</h1>
+                            <p class="slide-subtitle">3 Takeaways từ nghiên cứu CodeGuard</p>
+                        </div>
+
+                        <div class="flex flex-col gap-3">
+                            <div class="card-neutral card-highlight">
+                                <h3 class="font-bold text-slate-800 text-md mb-1">1. Tính đặc thù của Domain là tối quan
+                                    trọng</h3>
+                                <p class="text-sm text-slate-600">
+                                    Các bộ lọc an toàn chung chung không hiểu được quy tắc của một lớp học CS. Việc liên
+                                    kết bộ lọc với nội quy môn học giúp giảm mạnh số lần "từ chối oan" các câu hỏi chính
+                                    đáng, cũng như bắt gọn các vi phạm tinh vi.
+                                </p>
+                            </div>
+
+                            <div class="card-neutral card-highlight">
+                                <h3 class="font-bold text-slate-800 text-md mb-1">2. Taxonomy định hướng bởi giảng viên
+                                    rất thực tiễn</h3>
+                                <p class="text-sm text-slate-600">
+                                    Dựa vào syllabus thực tế để phân loại 20 lỗi vi phạm là cách làm sát với thực tế
+                                    nhất, bắt đúng các tình huống sinh viên hay lợi dụng AI.
+                                </p>
+                            </div>
+
+                            <div class="card-neutral card-highlight">
+                                <h3 class="font-bold text-slate-800 text-md mb-1">3. Guardrails nhẹ, tinh chỉnh theo
+                                    Task (PromptShield) là giải pháp tối ưu</h3>
+                                <p class="text-sm text-slate-600">
+                                    Không cần những mô hình khổng lồ chậm chạp. Chỉ với mô hình 125M tham số được tinh
+                                    chỉnh đúng dữ liệu, PromptShield đạt hiệu suất vượt bậc, độ trễ cực thấp, dễ dàng
+                                    tích hợp vào trường học.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 14: Limitations -->
+                <div class="slide-frame" id="slide-14">
+                    <div class="slide-standard">
+                        <div class="slide-header">
+                            <div class="badge badge-amber"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Hạn chế
+                            </div>
+                            <h1 class="slide-title">Hạn chế của nghiên cứu</h1>
+                            <p class="slide-subtitle">Limitations & Construct Validity</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-amber-700 text-md mb-2">Rủi ro về Giá trị phân loại</h3>
+                                <p class="text-sm text-slate-600">
+                                    Liệu 20 hạng mục vi phạm có bao quát 100% thực tế lớp học?
+                                    <br /><em>Khắc phục:</em> Nhóm đã dựa vào 18 đề cương uy tín và nhờ giảng viên kinh
+                                    nghiệm xác thực.
+                                </p>
+                            </div>
+                            <div class="card-neutral">
+                                <h3 class="font-bold text-amber-700 text-md mb-2">Độ chính xác của Dataset tự động</h3>
+                                <p class="text-sm text-slate-600">
+                                    Liệu Prompts sinh từ DeepSeek/Dolphin có sát thực tế?
+                                    <br /><em>Khắc phục:</em> Đã có đội ngũ 3 người gán nhãn thủ công 1000 mẫu để đối
+                                    chứng và ra kết quả 97.4% chính xác.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card-neutral mt-4">
+                            <h3 class="font-bold text-amber-700 text-md mb-2">Phạm vi ứng dụng (External Validity)</h3>
+                            <p class="text-sm text-slate-600">
+                                CodeGuard hiện chỉ tập trung vào các môn <strong>Lập trình cơ bản & trung cấp</strong>.
+                                Các môn chuyên sâu (hệ thống, lý thuyết đồ thị, đạo đức AI...) hoặc các chuyên ngành
+                                khác ngoài CS sẽ cần một bộ Taxonomy và Dataset riêng biệt.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 15: Q&A - Thank you -->
+                <div class="slide-frame" id="slide-15">
+                    <div class="slide-layout-split">
+                        <div class="slide-left-panel">
+                            <div class="badge badge-emerald">
+                                <i class="fa-solid fa-circle-question mr-2"></i>Phần Thảo Luận & Hỏi Đáp
+                            </div>
+                            <h1 class="main-title text-5xl font-extrabold font-serif mb-4 text-slate-900">Q&A Session
+                            </h1>
+                            <h2 class="sub-title text-2xl text-blue-700 font-semibold mb-8">Xin chân thành cảm ơn Thầy
+                                và các bạn đã lắng nghe!</h2>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="p-4 border border-slate-200 bg-white rounded-lg shadow-sm">
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1"><i
+                                            class="fa-solid fa-envelope text-blue-600 mr-2"></i>Thông tin bài báo</h4>
+                                    <p class="text-xs text-slate-500">CodeGuard: Improving LLM Guardrails in CS
+                                        Education (EACL 2026)</p>
+                                </div>
+                                <div class="p-4 border border-slate-200 bg-white rounded-lg shadow-sm">
+                                    <h4 class="font-bold text-slate-800 text-sm mb-1"><i
+                                            class="fa-solid fa-link text-red-600 mr-2"></i>Mã nguồn & Dữ liệu</h4>
+                                    <p class="text-xs text-slate-500 break-all">
+                                        github.com/mraihan-gmu/CodeGuard
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="slide-right-panel">
+                            <div class="circle-1"></div>
+                            <div class="circle-2"></div>
+                            <div class="circle-3"></div>
+
+                            <div class="univ-text-bottom z-10 flex flex-col items-center gap-5 w-full">
+                                <div class="bg-white p-4 rounded-2xl shadow-xl w-fit mx-auto">
+                                    <img src="Logo ĐH Công Nghệ Thông Tin - UIT.png" alt="Logo UIT" class="w-40 h-auto object-contain">
+                                </div>
+                                <div class="text-white font-bold text-[22px] text-center leading-snug drop-shadow-md tracking-wide">
+                                    KHOA HỌC MÁY TÍNH<br/>UIT
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTROLS -->
+                <div class="controls">
+                    <button class="btn-control" onclick="prevSlide()" id="btn-prev"><i
+                            class="fa-solid fa-chevron-left mr-2"></i>Trước</button>
+                    <button class="btn-control" onclick="nextSlide()" id="btn-next">Sau<i
+                            class="fa-solid fa-chevron-right ml-2"></i></button>
+                    <button class="btn-control" onclick="toggleFullscreen()" title="Toàn màn hình"><i
+                            class="fa-solid fa-expand"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSlideIndex = 1;
+        const totalSlides = document.querySelectorAll('.slide-frame').length;
+
+        function adjustSlideScaling() {
+            const viewport = document.getElementById('viewport');
+            const slides = document.querySelectorAll('.slide-frame');
+            let viewportWidth = viewport.clientWidth;
+            let viewportHeight = viewport.clientHeight;
+
+            if (window.innerWidth > 768) {
+                viewportWidth -= 40;
+                viewportHeight -= 40;
+            }
+
+            const targetWidth = 1280;
+            const targetHeight = 720;
+            const scaleWrapper = document.getElementById('scale-wrapper');
+
+            if (window.innerWidth <= 768) {
+                document.body.classList.add('mobile-view');
+                if (scaleWrapper) {
+                    scaleWrapper.style.transform = 'none';
+                    scaleWrapper.style.width = '100%';
+                    scaleWrapper.style.height = '100%';
+                }
+                slides.forEach(slide => {
+                    slide.style.width = '100%';
+                    slide.style.height = '100%';
+                    slide.style.borderRadius = '0';
+                    slide.style.transform = 'none';
+                });
+                viewport.style.padding = '0';
+            } else {
+                document.body.classList.remove('mobile-view');
+                const scaleX = viewportWidth / targetWidth;
+                const scaleY = viewportHeight / targetHeight;
+                const scale = Math.min(scaleX, scaleY);
+
+                if (scaleWrapper) {
+                    scaleWrapper.style.transform = `scale(${scale})`;
+                    scaleWrapper.style.width = '1280px';
+                    scaleWrapper.style.height = '720px';
+                }
+                slides.forEach(slide => {
+                    slide.style.width = '1280px';
+                    slide.style.height = '720px';
+                    slide.style.borderRadius = '12px';
+                    slide.style.transform = 'none';
+                });
+                viewport.style.padding = '20px';
+            }
+        }
+
+        function showSlide(index) {
+            if (index < 1) index = 1;
+            if (index > totalSlides) index = totalSlides;
+            currentSlideIndex = index;
+
+            document.querySelectorAll('.slide-frame').forEach((slide, idx) => {
+                if (idx + 1 === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            const footer = document.getElementById('global-footer');
+            const counter = document.getElementById('slide-counter');
+            const controls = document.querySelector('.controls');
+
+            if (currentSlideIndex === 1 || currentSlideIndex === totalSlides) {
+                footer.style.display = 'none';
+                if (controls) controls.style.display = 'none';
+            } else {
+                footer.style.display = 'flex';
+                if (controls) controls.style.display = 'flex';
+                counter.innerText = `Trang ${currentSlideIndex} / ${totalSlides}`;
+            }
+
+            document.getElementById('btn-prev').disabled = currentSlideIndex === 1;
+            document.getElementById('btn-next').disabled = currentSlideIndex === totalSlides;
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides) {
+                showSlide(currentSlideIndex + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 1) {
+                showSlide(currentSlideIndex - 1);
+            }
+        }
+
+        function toggleFullscreen() {
+            const container = document.querySelector('.presentation-container');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    console.error(`Error enabling fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'Backspace') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.getElementById('viewport').addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.getElementById('viewport').addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) nextSlide();
+            if (touchEndX - touchStartX > 50) prevSlide();
+        });
+
+        window.addEventListener('resize', adjustSlideScaling);
+        window.onload = function () {
+            adjustSlideScaling();
+            showSlide(1);
+        };
+    </script>
+</body>
+
+</html>
