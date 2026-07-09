@@ -787,7 +787,7 @@
                                 class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-40 shadow-sm relative hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-users text-purple-600 text-3xl mb-3 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">Gán nhãn độc lập</div>
-                                <div class="text-[11px] text-slate-600">1 Ph.D & 1 Undergrad</div>
+                                <div class="text-[11px] text-slate-600">1 NCS tiến sĩ & 1 SV ĐH năm cuối</div>
                                 <div
                                     class="absolute -top-2 -right-2 bg-white border border-purple-200 rounded-full text-[10px] px-1.5 py-0.5 font-bold text-purple-700 shadow-sm z-10 whitespace-nowrap">
                                     Kappa: 0.96 (Cohen, 1960)</div>
@@ -799,7 +799,7 @@
                                 class="bg-orange-50 border border-orange-200 rounded-lg p-3 text-center w-36 shadow-sm hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-gavel text-orange-600 text-3xl mb-3 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">Trọng tài</div>
-                                <div class="text-[11px] text-slate-600">NCS Năm 5 (Bất đồng)</div>
+                                <div class="text-[11px] text-slate-600">NCS Năm 5</div>
                             </div>
 
                             <i class="fa-solid fa-arrow-right text-slate-300 text-xl"></i>
@@ -870,15 +870,15 @@
                                         thống</strong>
                                     <p class="text-slate-600 text-[12.5px] leading-relaxed">Các bộ lọc nội dung LLaMA
                                         Guard (Inan et al., 2023), NeMo Guardrails (Rebedea et al., 2023) cho F1-score
-                                        rất thấp (chỉ ~0.2 - 0.4). Chúng hoàn toàn
+                                        tương đối thấp (chỉ 0.5 - 0.6). Chúng hoàn toàn
                                         "mù" trước các vi phạm về liêm chính học thuật vì chỉ được huấn luyện để bắt bạo
                                         lực, ngôn từ kích động.</p>
                                 </div>
 
                                 <div class="bg-orange-50 p-3 rounded-lg border-l-4 border-orange-500 shadow-sm">
                                     <strong class="text-orange-800 flex items-center mb-0.5 text-[13px]"><i
-                                            class="fa-solid fa-robot mr-2"></i>Các LLMs khổng lồ cũng "chật
-                                        vật"</strong>
+                                            class="fa-solid fa-robot mr-2"></i>Các LLMs khổng lồ cũng "khó khăn"
+                                    </strong>
                                     <p class="text-slate-600 text-[12.5px] leading-relaxed">Dù có khả năng suy luận mạnh
                                         mẽ, các mô hình SOTA như GPT-4o (Hurst et al., 2024), Claude 3.7 Sonnet
                                         (Anthropic, 2025) cũng không thể vượt quá
@@ -942,7 +942,7 @@
                                 class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-48 shadow-sm relative hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-brain text-purple-600 text-3xl mb-2 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">RoBERTa-base (Liu et al., 2019)</div>
-                                <div class="text-[11px] text-slate-600">Huấn luyện: 37 phút (1x A6000)</div>
+                                <div class="text-[11px] text-slate-600">Huấn luyện: 37 phút (01 RTX A6000)</div>
                                 <div
                                     class="absolute -top-3 -right-3 bg-white border border-purple-200 rounded-full text-[10px] px-2 py-0.5 font-bold text-purple-700 shadow-sm">
                                     Gọn nhẹ</div>
@@ -1042,9 +1042,9 @@
                             <!-- Cột Bảng 2 -->
                             <div class="flex flex-col gap-3">
                                 <div
-                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[230px]">
+                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[300px]">
                                     <img src="Table 2.PNG" alt="Các bộ dữ liệu benchmark"
-                                        class="max-h-[170px] object-contain">
+                                        class="max-h-[250px] object-contain">
                                     <p class="text-[12.5px] text-slate-800 font-bold mt-2 text-center">Bảng 2: Các tập
                                         dữ liệu Benchmark</p>
                                 </div>
@@ -1070,9 +1070,9 @@
                             <!-- Cột Hình 3 -->
                             <div class="flex flex-col gap-3">
                                 <div
-                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[230px]">
+                                    class="image-container bg-white p-3 border border-slate-200 rounded-xl shadow-sm flex flex-col items-center justify-center h-[300px]">
                                     <img src="Figure 3.PNG" alt="So sánh hiệu suất Pass@1 và điểm F1"
-                                        class="max-h-[170px] object-contain">
+                                        class="max-h-[250px] object-contain">
                                     <p class="text-[12.5px] text-slate-800 font-bold mt-2 text-center">Hình 3: Kết quả
                                         sau khi fine-tuning</p>
                                 </div>
@@ -1082,7 +1082,7 @@
                                             class="fa-solid fa-chart-line mr-2"></i>Sự bảo toàn</h3>
                                     <p class="text-[13px] text-slate-600 leading-relaxed">Hình 3 chứng minh kết quả
                                         tuyệt vời: Sau khi Safety Fine-tuning trên tập CodeGuard, khả năng phân loại an
-                                        toàn (trục Y - F1 Score) <strong>tăng vọt lên ngưỡng xuất sắc 0.9+</strong>,
+                                        toàn (trục Y - F1 Score) <strong>tăng vọt lên ngưỡng xuất sắc 0.8+</strong>,
                                         trong khi năng lực giải thuật nguyên bản (trục X - Pass@1) <strong>gần như được
                                             giữ nguyên hoàn toàn</strong>. Mô hình trở nên an toàn hơn mà không hề "ngốc
                                         đi".</p>
