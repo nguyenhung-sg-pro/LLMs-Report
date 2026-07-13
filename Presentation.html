@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <!-- Đã xóa polyfill.io vì lỗi bảo mật -->
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
@@ -352,6 +352,46 @@
         .mt-4 {
             margin-top: 4px !important;
         }
+
+        @media print {
+
+            body,
+            html,
+            .presentation-container,
+            .viewport {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                background: white !important;
+            }
+
+            #scale-wrapper {
+                transform: none !important;
+                position: relative !important;
+                height: auto !important;
+                display: block !important;
+            }
+
+            .slide-frame {
+                display: flex !important;
+                position: relative !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+                opacity: 1 !important;
+                animation: none !important;
+            }
+
+            .controls {
+                display: none !important;
+            }
+
+            @page {
+                size: 1280px 720px;
+                margin: 0;
+            }
+        }
     </style>
 </head>
 
@@ -479,14 +519,14 @@
                     <div class="slide-standard">
                         <div class="slide-header">
                             <div class="badge"><i class="fa-solid fa-compass mr-2"></i>Abstract</div>
-                            <h1 class="slide-title">Tóm tắt (Abstract)</h1>
+                            <h1 class="slide-title">Tóm tắt</h1>
                             <p class="slide-subtitle">Tổng quan về nghiên cứu CodeGuard</p>
                         </div>
                         <div class="flex flex-col gap-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="card-neutral card-alert">
                                     <h3 class="font-bold text-lg text-red-700 mb-2"><i
-                                            class="fa-solid fa-circle-exclamation mr-2"></i>Vấn đề hiện tại</h3>
+                                            class="fa-solid fa-circle-exclamation mr-2"></i>Vấn đề</h3>
                                     <p class="text-slate-600 text-sm leading-relaxed">
                                         LLMs (Mô hình ngôn ngữ lớn) ngày càng được sử dụng rộng rãi trong giáo dục Khoa
                                         học máy tính (CS). Tuy nhiên, LLMs dễ bị tấn công bởi các prompt chứa mục đích
@@ -500,8 +540,8 @@
                                             class="fa-solid fa-lightbulb mr-2"></i>Đề xuất: CodeGuard</h3>
                                     <p class="text-slate-600 text-sm leading-relaxed">
                                         Nhóm tác giả đề xuất <strong>CodeGuard</strong> - một framework Guardrail toàn
-                                        diện gồm: <br />(1)Hệ thống phân loại để phân loại các lời nhắc prompt,
-                                        <br />(2) Dataset 8.000 prompts,
+                                        diện gồm: <br />(1)Hệ thống phân loại để phân loại câu lệnh prompt,
+                                        <br />(2) Bộ dữ liệu 8.000 prompts,
                                         <br />(3) Mô hình <strong>PromptShield</strong> (encoder-model) nhẹ và nhanh.
                                     </p>
                                 </div>
@@ -528,7 +568,7 @@
                     <div class="slide-standard">
                         <div class="slide-header">
                             <div class="badge"><i class="fa-solid fa-book-open mr-2"></i>1. Giới thiệu</div>
-                            <h1 class="slide-title">1. Bối cảnh & Vấn đề</h1>
+                            <h1 class="slide-title">1. Bối cảnh</h1>
                             <p class="slide-subtitle">Sự bùng nổ của AI Assistant trong lập trình</p>
                         </div>
 
@@ -551,7 +591,7 @@
                                     <li>LLM có thể sinh ra <strong>mã độc, virus, ransomware</strong> (Ghosh et al.,
                                         2025) nếu bị prompt
                                         injection.</li>
-                                    <li>Nguy cơ xoá dữ liệu, leo thang đặc quyền trên server nhà trường (Wang et al.,
+                                    <li>Nguy cơ xoá dữ liệu, truy cập trái phép vào hệ thống server Trường (Wang et al.,
                                         2024).</li>
                                 </ul>
                             </div>
@@ -631,13 +671,16 @@
                         </div>
 
                         <div class="card-neutral">
-                            <p class="text-sm text-slate-600 mb-3">Thông qua phương pháp Delphi (Hsu and Sandford, 2007), nhóm tác giả chia nhóm Relevant-Unsafe (RU) thành 20
-                                hạng mục vi phạm chi tiết dựa trên phương pháp phân loại của Nickerson et al. (2013). Một số nhóm nổi bật:</p>
+                            <p class="text-sm text-slate-600 mb-3">Thông qua phương pháp Delphi (Hsu and Sandford,
+                                2007), nhóm tác giả chia nhóm Relevant-Unsafe (RU) thành 20
+                                hạng mục vi phạm chi tiết dựa trên phương pháp phân loại của Nickerson et al. (2013).
+                                Một số nhóm nổi bật:</p>
 
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <h4 class="font-bold text-red-700 text-sm mb-1"><i
-                                            class="fa-solid fa-graduation-cap mr-2"></i>Gian lận học thuật (Sullivan et al., 2023)</h4>
+                                            class="fa-solid fa-graduation-cap mr-2"></i>Gian lận học thuật (Sullivan et
+                                        al., 2023)</h4>
                                     <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1 mb-3">
                                         <li><strong>Graded-Solution Request:</strong> Xin code giải hoàn chỉnh bài tập
                                             lấy điểm.</li>
@@ -649,7 +692,8 @@
                                 </div>
                                 <div>
                                     <h4 class="font-bold text-red-700 text-sm mb-1"><i
-                                            class="fa-solid fa-skull-crossbones mr-2"></i>Phá hoại & An ninh (Wang et al., 2024; Ghosh et al., 2025)</h4>
+                                            class="fa-solid fa-skull-crossbones mr-2"></i>Phá hoại & An ninh (Wang et
+                                        al., 2024; Ghosh et al., 2025)</h4>
                                     <ul class="list-disc pl-5 text-slate-600 text-xs space-y-1 mb-3">
                                         <li><strong>Data Deletion / Wipe:</strong> Xin script xoá sạch file/database.
                                         </li>
@@ -828,7 +872,7 @@
                                         class="fa-solid fa-bullseye text-emerald-600 mr-2"></i>Chất lượng Pipeline</h3>
                                 <p class="text-[12.5px] text-slate-600 leading-relaxed">Chỉ 2.6% nhãn tự động bị sai.
                                     <strong>Accuracy đạt 97.4%</strong>. Chứng minh <strong>pipeline</strong> tự động
-                                    cực kỳ chính xác.
+                                    rất chính xác.
                                 </p>
                             </div>
                         </div>
@@ -998,7 +1042,7 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="card-neutral">
                                 <h3 class="font-bold text-blue-800 text-md mb-2"><i
-                                        class="fa-solid fa-filter mr-2"></i>Chiến lược 1: Tiền lọc (Pre-filter)</h3>
+                                        class="fa-solid fa-filter mr-2"></i>Giai đoạn 1: Tiền lọc (Pre-filter)</h3>
                                 <p class="text-sm text-slate-600 leading-relaxed">
                                     Sử dụng PromptShield đứng ở cổng vào. Bất cứ người dùng nào gửi prompt, PromptShield
                                     sẽ chấm điểm. Nếu là RU hoặc IR, chặn ngay lập tức. Nếu RS, đẩy tiếp cho LLM xử lý.
@@ -1006,7 +1050,7 @@
                             </div>
                             <div class="card-neutral">
                                 <h3 class="font-bold text-blue-800 text-md mb-2"><i
-                                        class="fa-solid fa-brain mr-2"></i>Chiến lược 2: Fine-tuning LLM trực tiếp</h3>
+                                        class="fa-solid fa-brain mr-2"></i>Giai đoạn 2: Fine-tuning LLM trực tiếp</h3>
                                 <p class="text-sm text-slate-600 leading-relaxed">
                                     Huấn luyện chính các mô hình sinh code (Code LLMs) cách <strong>từ chối an
                                         toàn</strong> khi gặp các câu hỏi RU hoặc IR, mà không cần màng lọc bên ngoài.
@@ -1080,12 +1124,10 @@
                                     class="bg-purple-50 border-l-4 border-purple-500 p-3.5 rounded-lg shadow-sm h-full">
                                     <h3 class="font-bold text-purple-800 text-[14px] mb-1.5"><i
                                             class="fa-solid fa-chart-line mr-2"></i>Sự bảo toàn</h3>
-                                    <p class="text-[13px] text-slate-600 leading-relaxed">Hình 3 chứng minh kết quả
-                                        tuyệt vời: Sau khi Safety Fine-tuning trên tập CodeGuard, khả năng phân loại an
-                                        toàn (trục Y - F1 Score) <strong>tăng vọt lên ngưỡng xuất sắc 0.8+</strong>,
-                                        trong khi năng lực giải thuật nguyên bản (trục X - Pass@1) <strong>gần như được
-                                            giữ nguyên hoàn toàn</strong>. Mô hình trở nên an toàn hơn mà không hề "ngốc
-                                        đi".</p>
+                                    <p class="text-[13px] text-slate-600 leading-relaxed">Hình 3 chứng minh kết quả: Sau
+                                        khi Safety Fine-tuning trên tập CodeGuard, khả năng lập trình dường như không
+                                        suy giảm được thể hiện Pass@1. Trong khi F1 Score tăng mạnh. Chứng tỏ mô hình
+                                        trở nên an toàn hơn mà không bị giảm sút khả năng lập trình.</p>
                                 </div>
                             </div>
                         </div>
