@@ -528,11 +528,12 @@
                                     <h3 class="font-bold text-lg text-red-700 mb-2"><i
                                             class="fa-solid fa-circle-exclamation mr-2"></i>Vấn đề</h3>
                                     <p class="text-slate-600 text-sm leading-relaxed">
-                                        LLMs (Mô hình ngôn ngữ lớn) ngày càng được sử dụng rộng rãi trong giáo dục Khoa
-                                        học máy tính (CS). Tuy nhiên, LLMs dễ bị tấn công bởi các prompt chứa mục đích
-                                        xấu, đe dọa trực tiếp tới tính liêm chính học thuật (academic integrity) và chất
-                                        lượng học tập. Các công cụ Guardrail hiện tại không giải quyết tốt được vấn đề
-                                        này.
+                                        LLMs (Mô hình ngôn ngữ lớn) ngày càng được sử dụng rộng rãi trong giáo dục,
+                                        đặc biệt là ngành Khoa học máy tính (CS). Tuy nhiên, LLMs dễ bị lạm dụng bởi
+                                        các prompt chứa mục đích xấu, đe dọa tới tính liêm chính học thuật (academic
+                                        integrity)
+                                        và chất lượng học tập. Các công cụ Guardrail hiện tại chưa giải quyết tốt được
+                                        vấn đề.
                                     </p>
                                 </div>
                                 <div class="card-neutral card-highlight">
@@ -579,8 +580,8 @@
                                 <ul class="list-disc pl-5 text-slate-600 text-sm leading-relaxed space-y-2">
                                     <li>Công cụ sinh code (code generation) hỗ trợ đắc lực trong giảng dạy, chấm bài tự
                                         động (Raihan et al., 2024b; Berti et al., 2025).</li>
-                                    <li>Giúp người học có ngay đáp án, gợi ý và giải thích mã nguồn (AI-assisted coding
-                                        tools).</li>
+                                    <li>Giúp người học có ngay đáp án, gợi ý và giải thích mã nguồn một cách đơn giản dễ
+                                        hiểu.</li>
                                 </ul>
                             </div>
                             <div class="card-neutral card-alert">
@@ -747,9 +748,7 @@
                                 </div>
 
                                 <div class="flex flex-col gap-3">
-                                    <h3 class="font-bold text-slate-800 text-[15px] border-b border-slate-200 pb-1.5"><i
-                                            class="fa-solid fa-list-check text-blue-600 mr-2"></i>Các module trong Hình
-                                        2</h3>
+
 
                                     <div class="bg-slate-50 p-2.5 rounded-lg border-l-4 border-blue-500 shadow-sm">
                                         <strong class="text-blue-800 flex items-center mb-0.5 text-[13px]"><i
@@ -782,8 +781,8 @@
                                                 class="fa-solid fa-database mr-2"></i>4. Prompts -> Train / Test
                                             Split</strong>
                                         <p class="text-slate-600 text-[12.5px] leading-relaxed">Tập hợp thành bộ
-                                            CodeGuard 8,000 prompts hoàn chỉnh, sau đó chia làm 2 tập: Train (để huấn
-                                            luyện) và Test (để đánh giá).</p>
+                                            CodeGuard 8,000 prompts hoàn chỉnh, sau đó chia làm 3 tập: Train (để huấn
+                                            luyện), Test (để đánh giá) và Dev (để tinh chỉnh). </p>
                                     </div>
                                 </div>
                             </div>
@@ -974,7 +973,8 @@
                                 class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-database text-blue-600 text-3xl mb-2 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">Dữ liệu huấn luyện</div>
-                                <div class="text-[11px] text-slate-600 mt-1">Tập train 6.000 prompts và tập dev 1000 prompts</div>
+                                <div class="text-[11px] text-slate-600 mt-1">Tập train 6.000 prompts và tập dev 1000
+                                    prompts</div>
                             </div>
 
                             <div class="flex flex-col items-center w-16">
@@ -985,7 +985,8 @@
                             <div
                                 class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm relative hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-brain text-purple-600 text-3xl mb-2 mt-1"></i>
-                                <div class="text-[13px] font-bold text-slate-800">RoBERTa-base<br><span class="font-normal">(Liu et al., 2019)</span></div>
+                                <div class="text-[13px] font-bold text-slate-800">RoBERTa-base<br><span
+                                        class="font-normal">(Liu et al., 2019)</span></div>
                                 <div class="text-[11px] text-slate-600 mt-1">Huấn luyện: 37 phút (01 RTX A6000)</div>
                                 <div
                                     class="absolute -top-3 -right-3 bg-white border border-purple-200 rounded-full text-[10px] px-2 py-0.5 font-bold text-purple-700 shadow-sm">
@@ -1014,7 +1015,8 @@
                                 class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-medal text-amber-500 text-3xl mb-2 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">Gold-standard</div>
-                                <div class="text-[11px] text-slate-600 mt-1">Tập dữ liệu chuẩn</div>
+                                <div class="text-[11px] text-slate-600 mt-1">Tập test 1000 prompts được gán nhãn thủ
+                                    công</div>
                             </div>
                         </div>
 
@@ -1293,19 +1295,39 @@
                             </div>
                         </div>
 
-                        <div class="slide-right-panel">
-                            <div class="circle-1"></div>
-                            <div class="circle-2"></div>
-                            <div class="circle-3"></div>
+                        <div
+                            class="slide-right-panel bg-gradient-to-br from-blue-700 via-blue-800 to-slate-900 relative overflow-hidden flex flex-col items-center justify-center">
+                            <!-- Background decoration for dark theme -->
+                            <div
+                                class="absolute w-[600px] h-[600px] border border-white/10 rounded-full -right-[200px] -top-[100px] pointer-events-none">
+                            </div>
+                            <div
+                                class="absolute w-[400px] h-[400px] border-[10px] border-white/5 rounded-full -left-[150px] -bottom-[100px] pointer-events-none">
+                            </div>
+                            <div
+                                class="absolute w-[300px] h-[300px] bg-blue-500/20 rounded-full top-[10%] left-[20%] blur-[40px] pointer-events-none">
+                            </div>
+                            <div
+                                class="absolute w-[250px] h-[250px] bg-purple-500/20 rounded-full bottom-[10%] right-[10%] blur-[40px] pointer-events-none">
+                            </div>
 
-                            <div class="univ-text-bottom z-10 flex flex-col items-center gap-5 w-full">
-                                <div class="bg-white p-4 rounded-2xl shadow-xl w-fit mx-auto">
-                                    <img src="Logo ĐH Công Nghệ Thông Tin - UIT.png" alt="Logo UIT"
-                                        class="w-40 h-auto object-contain">
-                                </div>
+                            <div class="z-10 flex flex-col items-center gap-8 w-full px-8">
                                 <div
-                                    class="text-white font-bold text-[22px] text-center leading-snug drop-shadow-md tracking-wide">
-                                    KHOA HỌC MÁY TÍNH<br />UIT
+                                    class="bg-white/10 backdrop-blur-md p-5 rounded-[2rem] border border-white/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] transform transition hover:scale-105 duration-300">
+                                    <div class="bg-white p-5 rounded-2xl shadow-inner flex items-center justify-center">
+                                        <img src="Logo ĐH Công Nghệ Thông Tin - UIT.png" alt="Logo UIT"
+                                            class="w-48 h-auto object-contain">
+                                    </div>
+                                </div>
+                                <div class="text-white flex flex-col items-center gap-1.5 mt-2">
+                                    <div
+                                        class="font-extrabold text-[28px] text-center leading-tight tracking-wide drop-shadow-md">
+                                        KHOA HỌC MÁY TÍNH
+                                    </div>
+                                    <div
+                                        class="text-blue-200 font-semibold text-lg tracking-[0.3em] uppercase opacity-90">
+                                        Trường Đại học Công nghệ Thông tin
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1383,7 +1405,7 @@
             if (index < 1) index = 1;
             if (index > totalSlides) index = totalSlides;
             currentSlideIndex = index;
-            
+
             localStorage.setItem('presentation_currentSlide', currentSlideIndex);
 
             document.querySelectorAll('.slide-frame').forEach((slide, idx) => {
