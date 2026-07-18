@@ -958,7 +958,7 @@
                             class="mb-5 italic text-slate-700 text-[14px] border-l-4 border-blue-500 bg-blue-50/60 p-4 rounded-r-lg shadow-sm">
                             <i class="fa-solid fa-quote-left text-blue-400 text-xl float-left mr-3 mb-1"></i>
                             <p class="leading-relaxed"><strong>PromptShield</strong> là một mô hình Guardrail chuyên
-                                biệt, gọn nhẹ nhưng mạnh mẽ, được tinh chỉnh (fine-tuned) đặc biệt để bảo vệ tính liêm
+                                biệt, gọn nhẹ, mạnh mẽ, được <strong>fine-tuned</strong> đặc biệt để bảo vệ tính liêm
                                 chính học thuật trong giáo dục Khoa học máy tính. Khác với các hệ thống thương mại, nó
                                 có khả năng nhận diện chính xác ranh giới mong manh giữa một câu lệnh hỗ trợ lập trình
                                 thông thường và hành vi gian lận bài tập.</p>
@@ -971,10 +971,10 @@
                         <div
                             class="flex items-center justify-center gap-4 mb-5 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                             <div
-                                class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center w-40 shadow-sm hover:-translate-y-1 transition-transform">
+                                class="bg-blue-50 border border-blue-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-database text-blue-600 text-3xl mb-2 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">Dữ liệu huấn luyện</div>
-                                <div class="text-[11px] text-slate-600">6.000 prompts<br>(CodeGuard Train Split)</div>
+                                <div class="text-[11px] text-slate-600 mt-1">Tập train 6.000 prompts và tập dev 1000 prompts</div>
                             </div>
 
                             <div class="flex flex-col items-center w-16">
@@ -983,10 +983,10 @@
                             </div>
 
                             <div
-                                class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-48 shadow-sm relative hover:-translate-y-1 transition-transform">
+                                class="bg-purple-50 border border-purple-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm relative hover:-translate-y-1 transition-transform">
                                 <i class="fa-solid fa-brain text-purple-600 text-3xl mb-2 mt-1"></i>
-                                <div class="text-[13px] font-bold text-slate-800">RoBERTa-base (Liu et al., 2019)</div>
-                                <div class="text-[11px] text-slate-600">Huấn luyện: 37 phút (01 RTX A6000)</div>
+                                <div class="text-[13px] font-bold text-slate-800">RoBERTa-base<br><span class="font-normal">(Liu et al., 2019)</span></div>
+                                <div class="text-[11px] text-slate-600 mt-1">Huấn luyện: 37 phút (01 RTX A6000)</div>
                                 <div
                                     class="absolute -top-3 -right-3 bg-white border border-purple-200 rounded-full text-[10px] px-2 py-0.5 font-bold text-purple-700 shadow-sm">
                                     Gọn nhẹ</div>
@@ -998,11 +998,23 @@
                             </div>
 
                             <div
-                                class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-center w-40 shadow-sm hover:-translate-y-1 transition-transform">
-                                <i class="fa-solid fa-shield-halved text-emerald-600 text-3xl mb-2 mt-1"></i>
+                                class="bg-teal-50 border border-teal-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-shield-halved text-teal-600 text-3xl mb-2 mt-1"></i>
                                 <div class="text-[13px] font-bold text-slate-800">PromptShield</div>
-                                <div class="text-[11px] text-slate-600">Pre-filter Đa lớp:<br><strong>RS / RU /
+                                <div class="text-[11px] text-slate-600 mt-1">Pre-filter Đa lớp:<br><strong>RS / RU /
                                         IR</strong></div>
+                            </div>
+
+                            <div class="flex flex-col items-center w-16">
+                                <span class="text-[10px] text-slate-500 font-bold mb-1">Đánh giá</span>
+                                <i class="fa-solid fa-arrow-right-long text-slate-300 text-2xl"></i>
+                            </div>
+
+                            <div
+                                class="bg-amber-50 border border-amber-200 rounded-lg p-3 text-center w-44 h-[140px] flex flex-col justify-center items-center shadow-sm hover:-translate-y-1 transition-transform">
+                                <i class="fa-solid fa-medal text-amber-500 text-3xl mb-2 mt-1"></i>
+                                <div class="text-[13px] font-bold text-slate-800">Gold-standard</div>
+                                <div class="text-[11px] text-slate-600 mt-1">Tập dữ liệu chuẩn</div>
                             </div>
                         </div>
 
@@ -1371,6 +1383,8 @@
             if (index < 1) index = 1;
             if (index > totalSlides) index = totalSlides;
             currentSlideIndex = index;
+            
+            localStorage.setItem('presentation_currentSlide', currentSlideIndex);
 
             document.querySelectorAll('.slide-frame').forEach((slide, idx) => {
                 if (idx + 1 === currentSlideIndex) {
@@ -1446,7 +1460,9 @@
         window.addEventListener('resize', adjustSlideScaling);
         window.onload = function () {
             adjustSlideScaling();
-            showSlide(1);
+            const savedSlide = localStorage.getItem('presentation_currentSlide');
+            const initialSlide = savedSlide ? parseInt(savedSlide, 10) : 1;
+            showSlide(initialSlide);
         };
     </script>
 </body>
